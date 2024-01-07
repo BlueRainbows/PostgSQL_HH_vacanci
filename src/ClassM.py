@@ -61,8 +61,9 @@ class HeadHunter:
 class DBManager:
     """ Класс для работы с базой данных """
 
-    def __init__(self, vacancy):
+    def __init__(self, vacancy, keyword=None):
         self.vacancy = vacancy
+        self.keyword = keyword
 
     def get_connect_database(self):
         """ Метод для создания базы данных """
@@ -107,25 +108,102 @@ class DBManager:
                                  data_vacancy['vacancy_salary_to'],
                                  data_vacancy['vacancy_url'],
                                  data_vacancy['company_id']))
+        conn.close()
 
     def get_companies_and_vacancies_count(self):
         """ получает список всех компаний и количество вакансий у каждой компании. """
-        pass
+        with psycopg2.connect(
+                host="localhost",
+                database="ProjVacancy",
+                user="postgres",
+                password=os.environ.get('PASSWORD_FOR_POSTGRESQL')
+        ) as conn:
+            with conn.cursor() as cur:
+                cur.execute('''
+                            SELECT company_name, COUNT(*) AS count_vacancy FROM company
+                            INNER JOIN vacancy ON vacancy.company_vacancy=company.company_id
+                            GROUP BY company_name
+                            ''')
+                rows = cur.fetchall()
+                for row in rows:
+                    print(row)
+        conn.close()
 
     def get_all_vacancies(self):
         """ получает список всех вакансий с указанием названия компании,
         названия вакансии и зарплаты и ссылки на вакансию. """
-        pass
+        with psycopg2.connect(
+                host="localhost",
+                database="ProjVacancy",
+                user="postgres",
+                password=os.environ.get('PASSWORD_FOR_POSTGRESQL')
+        ) as conn:
+            with conn.cursor() as cur:
+                cur.execute('''
+                            SELECT company_name, vacancy_name, vacancy_salary_from, vacancy_salary_to, vacancy_url
+                            FROM company, vacancy
+                            WHERE company_id = company_vacancy
+                            ''')
+                rows = cur.fetchall()
+                for row in rows:
+                    print(row)
+        conn.close()
 
     def get_avg_salary(self):
         """ получает среднюю зарплату по вакансиям. """
-        pass
+        with psycopg2.connect(
+                host="localhost",
+                database="ProjVacancy",
+                user="postgres",
+                password=os.environ.get('PASSWORD_FOR_POSTGRESQL')
+        ) as conn:
+            with conn.cursor() as cur:
+                cur.execute('''
+                            SELECT round(AVG((vacancy_salary_from + vacancy_salary_to)/2)) 
+                            FROM vacancy
+                            ''')
+                rows = cur.fetchall()
+                for row in rows:
+                    print(row)
+        conn.close()
 
     def get_vacancies_with_higher_salary(self):
         """ получает список всех вакансий, у которых зарплата выше средней по всем вакансиям. """
-        pass
+        with psycopg2.connect(
+                host="localhost",
+                database="ProjVacancy",
+                user="postgres",
+                password=os.environ.get('PASSWORD_FOR_POSTGRESQL')
+        ) as conn:
+            with conn.cursor() as cur:
+                cur.execute('''
+                            SELECT vacancy_name, (vacancy_salary_from + vacancy_salary_to)/2 AS salary
+                            FROM vacancy
+                            WHERE (vacancy_salary_from + vacancy_salary_to)/2 > 
+                            (SELECT round(AVG((vacancy_salary_from + vacancy_salary_to)/2)) FROM vacancy)
+                            ORDER BY salary DESC
+                            ''')
+                rows = cur.fetchall()
+                for row in rows:
+                    print(row)
+        conn.close()
 
     def get_vacancies_with_keyword(self):
         """ получает список всех вакансий,
         в названии которых содержатся переданные в метод слова, например python."""
-        pass
+        with psycopg2.connect(
+                host="localhost",
+                database="ProjVacancy",
+                user="postgres",
+                password=os.environ.get('PASSWORD_FOR_POSTGRESQL')
+        ) as conn:
+            with conn.cursor() as cur:
+                cur.execute(f'''
+                            SELECT vacancy_name, vacancy_city, vacancy_url
+                            FROM vacancy
+                            WHERE lower(vacancy_name) LIKE '%{self.keyword}%'
+                            ''')
+                rows = cur.fetchall()
+                for row in rows:
+                    print(row)
+        conn.close()
