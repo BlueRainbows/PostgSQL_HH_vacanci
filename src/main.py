@@ -23,17 +23,27 @@ if __name__ == '__main__':
             databases = DBManager(hh_vacancy)
             databases.get_connect_database()
             if user_request == 1:
-                databases.get_companies_and_vacancies_count()
+                data_1 = databases.get_companies_and_vacancies_count()
+                for data in data_1:
+                    print(*data)
             elif user_request == 2:
-                databases.get_all_vacancies()
+                data_2 = databases.get_all_vacancies()
+                for data in data_2:
+                    print(*data)
             elif user_request == 3:
-                databases.get_avg_salary()
+                data_3 = databases.get_avg_salary()
+                for data in data_3:
+                    print(*data)
             elif user_request == 4:
-                databases.get_vacancies_with_higher_salary()
+                data_4 = databases.get_vacancies_with_higher_salary()
+                for data in data_4:
+                    print(*data)
             elif user_request == 5:
                 keyword = input('Введите слово для поискового запроса: ').lower()
                 databases = DBManager(hh_vacancy, keyword)
-                databases.get_vacancies_with_keyword()
+                data_5 = databases.get_vacancies_with_keyword()
+                for data in data_5:
+                    print(*data)
             elif user_request == 0:
                 break
             else:

@@ -125,9 +125,8 @@ class DBManager:
                             GROUP BY company_name
                             ''')
                 rows = cur.fetchall()
-                for row in rows:
-                    print(row)
         conn.close()
+        return rows
 
     def get_all_vacancies(self):
         """ получает список всех вакансий с указанием названия компании,
@@ -145,9 +144,8 @@ class DBManager:
                             WHERE company_id = company_vacancy
                             ''')
                 rows = cur.fetchall()
-                for row in rows:
-                    print(row)
         conn.close()
+        return rows
 
     def get_avg_salary(self):
         """ получает среднюю зарплату по вакансиям. """
@@ -163,9 +161,8 @@ class DBManager:
                             FROM vacancy
                             ''')
                 rows = cur.fetchall()
-                for row in rows:
-                    print(row)
         conn.close()
+        return rows
 
     def get_vacancies_with_higher_salary(self):
         """ получает список всех вакансий, у которых зарплата выше средней по всем вакансиям. """
@@ -184,9 +181,8 @@ class DBManager:
                             ORDER BY salary DESC
                             ''')
                 rows = cur.fetchall()
-                for row in rows:
-                    print(row)
         conn.close()
+        return rows
 
     def get_vacancies_with_keyword(self):
         """ получает список всех вакансий,
@@ -204,6 +200,5 @@ class DBManager:
                             WHERE lower(vacancy_name) LIKE '%{self.keyword}%'
                             ''')
                 rows = cur.fetchall()
-                for row in rows:
-                    print(row)
         conn.close()
+        return rows
